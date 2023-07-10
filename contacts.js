@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 function listContacts() {
   try {
@@ -8,8 +8,7 @@ function listContacts() {
 
     const contactsData = fs.readFileSync(contactsPath);
     const contacts = JSON.parse(contactsData);
-    console.log(contacts);
-
+    console.table(contacts);
   } catch (error) {
     console.log(error);
   }
@@ -23,13 +22,16 @@ function getContactById(contactId) {
     const contacts = JSON.parse(contactsData);
 
     const contact = contacts.find((c) => c.id === contactId);
-    console.log(contact);
 
-    return contact || null;
-
+    if (contact) {
+      console.log(contact);
+      return contact;
+    } else {
+      console.log(null);
+      return null;
+    }
   } catch (error) {
     console.log(error);
-    return null;
   }
 }
 
@@ -40,17 +42,20 @@ function removeContact(contactId) {
     let contacts = JSON.parse(contactsData);
 
     const removedContact = contacts.find((c) => c.id === contactId);
-    if (!removedContact) {
-      return null;
-    }
 
     contacts = contacts.filter((c) => c.id !== contactId);
     fs.writeFileSync(contactsPath, JSON.stringify(contacts));
 
-    return removedContact;
+    if (removedContact) {
+      console.log("removed contact:", removedContact);
+      return removedContact;
+    } else {
+      console.log(null);
+      return null;
+    }
+
   } catch (error) {
     console.log(error);
-    return null;
   }
 }
 
@@ -66,17 +71,19 @@ function addContact(name, email, phone) {
       id: newContactId,
       name,
       email,
-      phone
+      phone,
     };
 
     contacts.push(newContact);
 
     fs.writeFileSync(contactsPath, JSON.stringify(contacts));
 
+    console.log("new contact:", newContact);
+
     return newContact;
+
   } catch (error) {
     console.log(error);
-    return null;
   }
 }
 
@@ -84,5 +91,5 @@ module.exports = {
   listContacts,
   getContactById,
   removeContact,
-  addContact
+  addContact,
 };
